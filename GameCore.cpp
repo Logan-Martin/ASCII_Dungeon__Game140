@@ -30,6 +30,13 @@ namespace TextGame
 		// 0
 		{
 			RoomData room = CreateRoom("ROOM NAME", "ROOM DESCRIPTION");
+			room.RoomMapWidth = 8;
+			room.RoomMap = 
+				"###..###"
+				"#......#"
+				"#......#"
+				"#......#"
+				"########";
 
 			worldState.Rooms.push_back(room);
 		}

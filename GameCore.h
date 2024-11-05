@@ -17,6 +17,9 @@ namespace TextGame
 	{
 		std::string Name;
 		std::string Description;
+
+		int RoomMapWidth;
+		std::string RoomMap;
 	};
 
 	struct WorldState
