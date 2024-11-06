@@ -112,6 +112,26 @@ namespace TextGame
 			printf("LOCATION: %s\n", currRoom.Name.c_str());
 			printf("%s\n\n", currRoom.Description.c_str());
 			
+			std::string renderedMapString = "";
+			unsigned int currentSpace = 0;
+			while (currentSpace < currRoom.RoomMap.size()) {
+				char characterToDisplay = currRoom.RoomMap[currentSpace];
+
+				// if player is here, replace characterToDisplay with @
+				// if an item is here, replace characterToDisplay with i
+
+				renderedMapString += characterToDisplay;
+				if (currentSpace % currRoom.RoomMapWidth == (currRoom.RoomMapWidth - 1) ) { // % is modulus, giving a remainder
+					renderedMapString += "\n";
+				}
+
+
+				currentSpace++;
+			}
+
+
+			printf("%s\n", renderedMapString.c_str());
+
 			printf("\n");
 		}
 		else if (playerState.WantsInventoryListed)
