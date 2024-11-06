@@ -4,12 +4,19 @@
 
 namespace TextGame
 {
+	struct Position {
+		int X;
+		int Y;
+	};
+
 	struct PlayerState
 	{
 		bool WantsToExit;
 		bool WantsDescription;
 		bool WantsInventoryListed;
 		
+		Position CurrentPosition;
+
 		int CurrentRoomIndex;
 	};
 
@@ -32,4 +39,7 @@ namespace TextGame
 	void RenderGame(const PlayerState& playerState, const WorldState& worldState);
 	void UpdateGame(PlayerState& playerState, WorldState& worldState);
 	void CleanupGame(PlayerState& playerState, WorldState& worldState);
+
+	int PositionToIndex(const Position& position, int roomWidth);
+
 }

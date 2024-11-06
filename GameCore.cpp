@@ -24,6 +24,8 @@ namespace TextGame
 
 		playerState.WantsDescription = true;
 		playerState.CurrentRoomIndex = 0;
+		playerState.CurrentPosition.X = 4;
+		playerState.CurrentPosition.Y = 2;
 
 		worldState.Rooms.clear();
 
@@ -34,7 +36,7 @@ namespace TextGame
 			room.RoomMap = 
 				"###..###"
 				"#......#"
-				"#......#"
+				".......#"
 				"#......#"
 				"########";
 
@@ -118,7 +120,14 @@ namespace TextGame
 				char characterToDisplay = currRoom.RoomMap[currentSpace];
 
 				// if player is here, replace characterToDisplay with @
+				if (PositionToIndex(playerState.CurrentPosition, currRoom.RoomMapWidth) == currentSpace ) {
+					characterToDisplay = '@';
+				}
+				
+
 				// if an item is here, replace characterToDisplay with i
+
+
 
 				renderedMapString += characterToDisplay;
 				if (currentSpace % currRoom.RoomMapWidth == (currRoom.RoomMapWidth - 1) ) { // % is modulus, giving a remainder
@@ -153,4 +162,9 @@ namespace TextGame
 	{
 		worldState.Rooms.clear();
 	}
+
+	int PositionToIndex(const Position& position, int roomWidth) {
+		return position.Y * roomWidth + position.X;
+	}
+
 }
