@@ -7,6 +7,16 @@ namespace TextGame
 	struct Position {
 		int X;
 		int Y;
+
+
+		// Below is done so we can check if playerState.currentPosition == playerState.desiredPosition
+		bool operator==(const Position& otherPosition) const {
+			return Y == otherPosition.X && Y == otherPosition.Y;
+		}
+
+		bool operator!=(const Position& otherPosition) const {
+			return !(*this == otherPosition); // *this refers to the struct Position
+		}
 	};
 
 	struct PlayerState
@@ -16,6 +26,7 @@ namespace TextGame
 		bool WantsInventoryListed;
 		
 		Position CurrentPosition;
+		Position DesiredPosition;
 
 		int CurrentRoomIndex;
 	};
@@ -41,5 +52,6 @@ namespace TextGame
 	void CleanupGame(PlayerState& playerState, WorldState& worldState);
 
 	int PositionToIndex(const Position& position, int roomWidth);
-
+	bool IsSpaceIsOpenForMovement(const Position& position, const RoomData& currRoom);
+	bool IsSpaceOutsideMap(const Position& position, const RoomData& currRoom);
 }

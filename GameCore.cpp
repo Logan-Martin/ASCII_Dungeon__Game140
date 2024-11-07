@@ -36,9 +36,11 @@ namespace TextGame
 			room.RoomMap = 
 				"###..###"
 				"#......#"
-				".......#"
 				"#......#"
-				"########";
+				"........"
+				"#......#"
+				"#......#"
+				"###..###";
 
 			worldState.Rooms.push_back(room);
 		}
@@ -49,6 +51,7 @@ namespace TextGame
 		playerState.WantsToExit = false;
 		playerState.WantsDescription = false;
 		playerState.WantsInventoryListed = false;
+		playerState.DesiredPosition = playerState.CurrentPosition;
 		
 		printf("What do you do?\n");
 		printf("> ");
@@ -58,22 +61,22 @@ namespace TextGame
 		{
 			playerState.WantsToExit = true;
 		}
-		/*else if (command.Verb == "north" || command.Verb == "n")
+		else if (command.Verb == "north" || command.Verb == "n")
 		{
-			
+			playerState.DesiredPosition.Y = playerState.CurrentPosition.Y - 1;
 		}
 		else if (command.Verb == "south" || command.Verb == "s")
 		{
-			
+			playerState.DesiredPosition.Y = playerState.CurrentPosition.Y + 1;
 		}
 		else if (command.Verb == "west" || command.Verb == "w")
 		{
-			
+			playerState.DesiredPosition.X = playerState.CurrentPosition.X - 1;
 		}
 		else if (command.Verb == "east" || command.Verb == "e")
 		{
-			
-		}*/
+			playerState.DesiredPosition.X = playerState.CurrentPosition.X + 1;
+		}
 		else if (command.Verb == "look")
 		{
 			playerState.WantsDescription = true;
@@ -156,6 +159,21 @@ namespace TextGame
 	{
 		RoomData& currRoom = worldState.Rooms[playerState.CurrentRoomIndex];
 				
+		if (playerState.CurrentPosition != playerState.DesiredPosition ) { // this works because of Struct in GameCore.h
+			if (IsSpaceOutsideMap(playerState.DesiredPosition,currRoom)) {
+				printf("nothing but void out there!");
+			}
+			else if (IsSpaceIsOpenForMovement(playerState.DesiredPosition, currRoom)) 
+			{
+				playerState.CurrentPosition = playerState.DesiredPosition;
+				playerState.WantsDescription = true;
+			}
+			else 
+			{
+				printf("That path is blocked!\n");
+			}
+		}
+
 	}
 
 	void CleanupGame(PlayerState& playerState, WorldState& worldState)
@@ -167,4 +185,15 @@ namespace TextGame
 		return position.Y * roomWidth + position.X;
 	}
 
+	bool IsSpaceIsOpenForMovement(const Position& position, const RoomData& currRoom) {
+		int spaceToIndex = PositionToIndex(position,currRoom.RoomMapWidth);
+		return currRoom.RoomMap[spaceToIndex] == '.';
+	}
+
+	bool IsSpaceOutsideMap(const Position& position, const RoomData& currRoom) {
+		return position.X < 0 ||
+			position.X >= currRoom.RoomMapWidth ||
+			position.Y < 0 ||
+			position.Y >= ((int)currRoom.RoomMap.size() / currRoom.RoomMapWidth);
+	}
 }
