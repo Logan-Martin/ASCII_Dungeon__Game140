@@ -316,13 +316,16 @@ namespace TextGame
 				}
 				else if (playerState.DesiredPosition.Y >= ((int)currRoom.RoomMap.size() / currRoom.RoomMapWidth))
 				{
+					int valueToPrint = ((int)currRoom.RoomMap.size() / currRoom.RoomMapWidth);
 					desiredRoomPosition.Y++; 
 					playerPositionType = 4; // s
 				}
 
 				bool foundNewRoom = false;
-				for (unsigned int i = 0; i < worldState.Rooms.size(); ++i) {
-					if (worldState.Rooms[i].RoomPosition == desiredRoomPosition ) {
+				for (unsigned int i = 0; i < worldState.Rooms.size(); ++i) 
+				{
+					if (worldState.Rooms[i].RoomPosition == desiredRoomPosition) 
+					{
 						playerState.CurrentRoomIndex = i;
 						playerState.WantsDescription = true;
 

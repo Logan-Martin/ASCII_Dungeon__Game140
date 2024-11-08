@@ -11,7 +11,7 @@ namespace TextGame
 
 		// Below is done so we can check if playerState.currentPosition == playerState.desiredPosition
 		bool operator==(const Position& otherPosition) const {
-			return Y == otherPosition.X && Y == otherPosition.Y;
+			return X == otherPosition.X && Y == otherPosition.Y;
 		}
 
 		bool operator!=(const Position& otherPosition) const {
