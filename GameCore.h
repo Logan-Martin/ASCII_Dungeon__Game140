@@ -38,6 +38,8 @@ namespace TextGame
 
 		int RoomMapWidth;
 		std::string RoomMap;
+
+		Position RoomPosition;
 	};
 
 	struct WorldState
