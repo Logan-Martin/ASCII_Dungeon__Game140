@@ -26,6 +26,7 @@ namespace TextGame
 		playerState.CurrentRoomIndex = 0;
 		playerState.CurrentPosition.X = 4;
 		playerState.CurrentPosition.Y = 2;
+		playerState.WantsToGet = false;
 
 		//playerState.Inventory.push_back({ ItemType_KEY, Position() });
 		//playerState.Inventory.push_back({ ItemType_SWORD, Position() });
@@ -76,9 +77,9 @@ namespace TextGame
 			room.RoomMap =
 				"###..###"
 				"#......#"
-				"#..##..#"
+				"#......#"
 				"...##..."
-				"#..##..#"
+				"#......#"
 				"#......#"
 				"###..###";
 
@@ -99,7 +100,11 @@ namespace TextGame
 				"#......#"
 				"###..###";
 
+			room.Inventory.push_back({ ItemType_KEY, {2,3} }); 
+			room.Inventory.push_back({ ItemType_SWORD, {2,2} });
+
 			worldState.Rooms.push_back(room);
+
 		}
 		// 5 (down)
 		{
@@ -130,6 +135,8 @@ namespace TextGame
 				"#......#"
 				"#......#"
 				"########";
+
+			room.LookedDoors.push_back({ {7,3} });
 
 			worldState.Rooms.push_back(room);
 		}
@@ -225,17 +232,18 @@ namespace TextGame
 		{
 			playerState.WantsInventoryListed = true;
 		}
-		/*else if (command.Verb == "get")
+		else if (command.Verb == "get")
 		{
-			
-		}*/
+			playerState.WantsToGet = true;
+		}
 		else if (command.Verb == "help")
 		{
 			printf("Command List: look, quit, inventory, get, north, south, west, east\n");
 			printf("Key:\n");
 			printf("  @ - Player\n");
 			printf("  A - Altar\n");
-			printf("  i - Item\n");
+			printf("  k - Key \n");
+			printf("  s - Sword \n");
 			printf("  . - Floor\n");
 			printf("  # - Wall\n");
 			printf("  H - Door (Locked)\n");
@@ -254,7 +262,7 @@ namespace TextGame
 		{
 			const RoomData& currRoom = worldState.Rooms[playerState.CurrentRoomIndex];
 			printf("================================================\n");
-			printf("LOCATION: %s\n", currRoom.Name.c_str());
+			printf("LOCATION: %s\n", currRoom.Name.c_str());	
 			printf("%s\n\n", currRoom.Description.c_str());
 			
 			std::string renderedMapString = "";
@@ -262,14 +270,27 @@ namespace TextGame
 			while (currentSpace < currRoom.RoomMap.size()) {
 				char characterToDisplay = currRoom.RoomMap[currentSpace];
 
+				// if an item is here, replace characterToDisplay with i
+				for (unsigned int i = 0; i < currRoom.Inventory.size(); ++i) {
+					const InventoryItem& currItem = currRoom.Inventory[i];
+					if (PositionToIndex(currItem.ItemPosition, currRoom.RoomMapWidth) == currentSpace) {
+						characterToDisplay = GetItemIcon(currItem.Type) ;
+					}
+				}
+
+				// For Locked Doors:
+				for (unsigned int i = 0; i < currRoom.LookedDoors.size(); ++i) {
+					const LockedDoorData& currDoor = currRoom.LookedDoors[i];
+					if (PositionToIndex(currDoor.DoorPosition, currRoom.RoomMapWidth) == currentSpace) {
+						characterToDisplay = 'D';
+					}
+				}
+
 				// if player is here, replace characterToDisplay with @
 				if (PositionToIndex(playerState.CurrentPosition, currRoom.RoomMapWidth) == currentSpace ) {
 					characterToDisplay = '@';
 				}
 				
-
-				// if an item is here, replace characterToDisplay with i
-
 
 
 				renderedMapString += characterToDisplay;
@@ -309,7 +330,11 @@ namespace TextGame
 	{
 		RoomData& currRoom = worldState.Rooms[playerState.CurrentRoomIndex];
 				
-		if (playerState.CurrentPosition != playerState.DesiredPosition ) { // this works because of Struct in GameCore.h
+		if (playerState.DesiredPosition != playerState.CurrentPosition ) { // this works because of Struct in GameCore.h
+
+			TryToUnlockDoor(playerState.DesiredPosition,currRoom, playerState);
+
+
 			if (IsSpaceOutsideMap(playerState.DesiredPosition,currRoom)) {
 
 				Position desiredRoomPosition = currRoom.RoomPosition;
@@ -376,10 +401,29 @@ namespace TextGame
 			}
 			else 
 			{
-				printf("That path is blocked!\n");
+				printf("\nThat path is blocked!\n");
 			}
 		}
+		else if (playerState.WantsToGet) {
 
+			bool foundItem = false;
+			for (unsigned int i = 0; i < currRoom.Inventory.size(); ++i) {
+				const InventoryItem& currItem = currRoom.Inventory[i];
+				if (currItem.ItemPosition == playerState.CurrentPosition) {
+					printf("\n I got a '%s'!\n", GetItemName(currItem.Type).c_str());
+					playerState.Inventory.push_back(currItem);
+					currRoom.Inventory.erase(currRoom.Inventory.begin() + i);
+
+					foundItem = true;
+					break;
+				}
+			}
+
+			if (!foundItem) {
+				printf("\nThere is nothing there to get. \n");
+			}
+
+		}
 	}
 
 	void CleanupGame(PlayerState& playerState, WorldState& worldState)
@@ -392,6 +436,14 @@ namespace TextGame
 	}
 
 	bool IsSpaceIsOpenForMovement(const Position& position, const RoomData& currRoom) {
+		for (unsigned int i = 0; i < currRoom.LookedDoors.size(); ++i) {
+			const LockedDoorData& currDoor = currRoom.LookedDoors[i];
+			if (currDoor.DoorPosition == position) {
+				return false;
+			}
+		}
+		
+		
 		int spaceToIndex = PositionToIndex(position,currRoom.RoomMapWidth);
 		return currRoom.RoomMap[spaceToIndex] == '.';
 	}
@@ -401,6 +453,34 @@ namespace TextGame
 			position.X >= currRoom.RoomMapWidth ||
 			position.Y < 0 ||
 			position.Y >= ((int)currRoom.RoomMap.size() / currRoom.RoomMapWidth);
+	}
+
+	void TryToUnlockDoor(const Position& position, RoomData& currRoom, PlayerState& playerState) {
+		for (unsigned int i_inv = 0; i_inv < currRoom.LookedDoors.size(); ++i_inv) {
+			const LockedDoorData& currDoor = currRoom.LookedDoors[i_inv];
+			if (currDoor.DoorPosition == position) {
+				// We found a door, now found if they have a key
+
+				bool doesPlayerHaveKeyToOpenDoor = false;
+				for (unsigned int i_lockedDoors = 0; i_lockedDoors < playerState.Inventory.size(); ++i_lockedDoors) {
+					const InventoryItem& currItem = playerState.Inventory[i_lockedDoors];
+					if (currItem.Type == ItemType_KEY) {
+						// Found a key!
+
+						printf("\n You unlocked the door using your key. \n");
+						doesPlayerHaveKeyToOpenDoor = true;
+						currRoom.LookedDoors.erase(currRoom.LookedDoors.begin() + i_inv);
+						playerState.Inventory.erase(playerState.Inventory.begin() + i_lockedDoors );
+						return;
+					}
+				}
+
+				if (!doesPlayerHaveKeyToOpenDoor) {
+					printf("\n You don't have a key to unlock the door! \n");
+				}
+
+			}
+		}
 	}
 
 	std::string GetItemName(ItemType itemType) {
@@ -415,6 +495,20 @@ namespace TextGame
 
 		}
 		return "Unknown Item";
+	}
+
+	char GetItemIcon(ItemType itemType) {
+		switch (itemType)
+		{
+		case TextGame::ItemType_KEY:
+			return 'k';
+			break;
+		case TextGame::ItemType_SWORD:
+			return 's';
+			break;
+
+		}
+		return 'i';
 	}
 
 

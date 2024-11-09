@@ -25,7 +25,7 @@ namespace TextGame
 		ItemType_SWORD
 	};
 
-	struct InvestoryItem {
+	struct InventoryItem {
 		ItemType Type;
 		Position ItemPosition;
 	};
@@ -35,13 +35,18 @@ namespace TextGame
 		bool WantsToExit;
 		bool WantsDescription;
 		bool WantsInventoryListed;
+		bool WantsToGet;
 		
 		Position CurrentPosition;
 		Position DesiredPosition;
 
 		int CurrentRoomIndex;
 
-		std::vector<InvestoryItem> Inventory;
+		std::vector<InventoryItem> Inventory;
+	};
+
+	struct LockedDoorData {
+		Position DoorPosition;
 	};
 
 	struct RoomData
@@ -53,6 +58,9 @@ namespace TextGame
 		std::string RoomMap;
 
 		Position RoomPosition;
+
+		std::vector<InventoryItem> Inventory;
+		std::vector<LockedDoorData> LookedDoors;
 	};
 
 	struct WorldState
@@ -70,6 +78,10 @@ namespace TextGame
 	bool IsSpaceIsOpenForMovement(const Position& position, const RoomData& currRoom);
 	bool IsSpaceOutsideMap(const Position& position, const RoomData& currRoom);
 
+	void TryToUnlockDoor(const Position& position, RoomData& currRoom, PlayerState& playerState);
+
 	std::string GetItemName(ItemType itemType);
+
+	char GetItemIcon(ItemType itemType);
 
 }
