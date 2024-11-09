@@ -38,7 +38,7 @@ namespace TextGame
 
 		// 1
 		{
-			RoomData room = CreateRoom("ROOM NAME 1", "ROOM DESCRIPTION 1");
+			RoomData room = CreateRoom("The Starting Field", "An empty grass field with a few flowers. Trees surround the area.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 0, 0 };
 			room.RoomMap = 
@@ -55,7 +55,7 @@ namespace TextGame
 
 		// 2
 		{
-			RoomData room = CreateRoom("ROOM NAME 2", "ROOM DESCRIPTION 2");
+			RoomData room = CreateRoom("Small rock field", "There are some small rocks dotted about, not much difference from just above.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 0, 1 };
 			room.RoomMap =
@@ -72,7 +72,7 @@ namespace TextGame
 
 		// 3
 		{
-			RoomData room = CreateRoom("ROOM NAME 3", "ROOM DESCRIPTION 3");
+			RoomData room = CreateRoom("Random Wall Junction", "There are 3 new paths to take. A wall of stone sits in the middle of the field.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 1, 1 };
 			room.RoomMap =
@@ -89,16 +89,16 @@ namespace TextGame
 
 		// 4 (up)
 		{
-			RoomData room = CreateRoom("ROOM NAME 4", "ROOM DESCRIPTION 4");
+			RoomData room = CreateRoom("Small Cave", "You enter a small cave with a few items on the floor.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 1, 0 };
 			room.RoomMap =
 				"########"
+				"##....##"
 				"#......#"
 				"#......#"
 				"#......#"
-				"#......#"
-				"#......#"
+				"##....##"
 				"###..###";
 
 			room.Inventory.push_back({ ItemType_KEY, {2,3} }); 
@@ -109,7 +109,7 @@ namespace TextGame
 		}
 		// 5 (down)
 		{
-			RoomData room = CreateRoom("ROOM NAME 5", "ROOM DESCRIPTION 5");
+			RoomData room = CreateRoom("Empty Field 2", "Another empty grass field, maybe there are some items somewhere else.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 1, 2 };
 			room.RoomMap =
@@ -125,16 +125,16 @@ namespace TextGame
 		}
 		// 6 (right)
 		{
-			RoomData room = CreateRoom("ROOM NAME 6", "ROOM DESCRIPTION 6");
+			RoomData room = CreateRoom("Small Grassy Pathway", "This pathway is narrow. A door is at the end. I wonder where it leads.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 2, 1 };
 			room.RoomMap =
 				"########"
-				"#......#"
+				"########"
 				"#......#"
 				"........"
 				"#......#"
-				"#......#"
+				"########"
 				"########";
 
 			room.LookedDoors.push_back({ {7,3} });
@@ -144,7 +144,7 @@ namespace TextGame
 
 		// 7
 		{
-			RoomData room = CreateRoom("ROOM NAME 7", "ROOM DESCRIPTION 7");
+			RoomData room = CreateRoom("Another Grass Field", "Another grass field huh. There's a big rock and up ahead, sounds exciting.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 3, 1 };
 			room.RoomMap =
@@ -161,16 +161,16 @@ namespace TextGame
 
 		// 8
 		{
-			RoomData room = CreateRoom("ROOM NAME 8", "ROOM DESCRIPTION 8");
+			RoomData room = CreateRoom("Big Cave Entrance", "This cave has more to it than the last one.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 3, 2 };
 			room.RoomMap =
 				"###..###"
-				"#......#"
-				"#......#"
-				"#......."
-				"#......#"
-				"#......#"
+				"##...###"
+				"#....###"
+				"#..###.."
+				"#...#..#"
+				"##....##"
 				"########";
 
 			worldState.Rooms.push_back(room);
@@ -178,16 +178,16 @@ namespace TextGame
 
 		// 9
 		{
-			RoomData room = CreateRoom("ROOM NAME 9", "ROOM DESCRIPTION 9");
+			RoomData room = CreateRoom("Big Cave End", "There's a Relic Stone at the center, not much else.");
 			room.RoomMapWidth = 8;
 			room.RoomPosition = { 4, 2 };
 			room.RoomMap =
 				"########"
-				"#......#"
+				"##....##"
 				"#......#"
 				".......#"
 				"#......#"
-				"#......#"
+				"##....##"
 				"########";
 			room.Inventory.push_back({ ItemType_RELICSTONE, {4,3} });
 			worldState.Rooms.push_back(room);
