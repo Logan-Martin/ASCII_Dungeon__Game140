@@ -27,6 +27,11 @@ namespace TextGame
 		playerState.CurrentPosition.X = 4;
 		playerState.CurrentPosition.Y = 2;
 
+		//playerState.Inventory.push_back({ ItemType_KEY, Position() });
+		//playerState.Inventory.push_back({ ItemType_SWORD, Position() });
+		//playerState.Inventory.push_back({ ItemType_KEY, Position() });
+
+
 		worldState.Rooms.clear();
 
 		// 1
@@ -286,6 +291,16 @@ namespace TextGame
 			printf("================================================\n");
 			printf("INVENTORY:\n");
 
+			if (playerState.Inventory.size() == 0) {
+				printf("You have nothing in your inventory!\n");
+			}
+			else {
+				for (unsigned int i = 0; i < playerState.Inventory.size(); i++) {
+					printf("%s\n", GetItemName(playerState.Inventory[i].Type).c_str());
+				}
+
+			}
+
 			printf("\n");
 		}
 	}
@@ -387,4 +402,20 @@ namespace TextGame
 			position.Y < 0 ||
 			position.Y >= ((int)currRoom.RoomMap.size() / currRoom.RoomMapWidth);
 	}
+
+	std::string GetItemName(ItemType itemType) {
+		switch (itemType)
+		{
+		case ItemType_KEY:
+			return "Shiny Key";
+			break;
+		case ItemType_SWORD:
+			return "Rusty Sword";
+			break;
+
+		}
+		return "Unknown Item";
+	}
+
+
 }

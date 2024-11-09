@@ -19,6 +19,17 @@ namespace TextGame
 		}
 	};
 
+	enum ItemType
+	{
+		ItemType_KEY,
+		ItemType_SWORD
+	};
+
+	struct InvestoryItem {
+		ItemType Type;
+		Position ItemPosition;
+	};
+
 	struct PlayerState
 	{
 		bool WantsToExit;
@@ -29,6 +40,8 @@ namespace TextGame
 		Position DesiredPosition;
 
 		int CurrentRoomIndex;
+
+		std::vector<InvestoryItem> Inventory;
 	};
 
 	struct RoomData
@@ -56,4 +69,7 @@ namespace TextGame
 	int PositionToIndex(const Position& position, int roomWidth);
 	bool IsSpaceIsOpenForMovement(const Position& position, const RoomData& currRoom);
 	bool IsSpaceOutsideMap(const Position& position, const RoomData& currRoom);
+
+	std::string GetItemName(ItemType itemType);
+
 }
