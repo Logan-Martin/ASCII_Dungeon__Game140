@@ -4,6 +4,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <conio.h>
 
 namespace TextGame
 {
@@ -19,8 +20,8 @@ namespace TextGame
 	void InitializeGame(PlayerState& playerState, WorldState& worldState)
 	{
 		printf("Welcome to...\n");
-		printf("A GAME by SOMEONE\n\n");
-		printf("TELL THE PLAYER THE GOAL OF THE GAME\n\n");
+		printf("The ASCII Dungeon by Logan Martin\n\n");
+		printf("The goal is to find and get the relic stone!\n\n");
 
 		playerState.WantsDescription = true;
 		playerState.CurrentRoomIndex = 0;
@@ -188,7 +189,7 @@ namespace TextGame
 				"#......#"
 				"#......#"
 				"########";
-
+			room.Inventory.push_back({ ItemType_RELICSTONE, {4,3} });
 			worldState.Rooms.push_back(room);
 		}
 	}
@@ -200,9 +201,25 @@ namespace TextGame
 		playerState.WantsInventoryListed = false;
 		playerState.DesiredPosition = playerState.CurrentPosition;
 		
-		printf("What do you do?\n");
+		printf("What do you do? (press 'c' for Command Mode & type 'help' for a command list)\n");
 		printf("> ");
-		TextAdventureCommand command = ParseAdventureCommand();
+		TextAdventureCommand command = {};
+		command.Verb = "";
+
+		while (command.Verb == "") {
+			char key = _getch();
+
+			if (key == 'A' || key == 'a') command.Verb = 'w';
+			else if (key == 'W' || key == 'w') command.Verb = "n";
+			else if (key == 'S' || key == 's') command.Verb = "s";
+			else if (key == 'D' || key == 'd') command.Verb = "e";
+			else if (key == 'C' || key == 'c') command.Verb = "commandMode";
+		}
+
+		if (command.Verb == "commandMode") {
+			printf("Command Mode: ");
+			command = ParseAdventureCommand();
+		}
 
 		if (command.Verb == "quit")
 		{
@@ -238,10 +255,10 @@ namespace TextGame
 		}
 		else if (command.Verb == "help")
 		{
-			printf("Command List: look, quit, inventory, get, north, south, west, east\n");
+			printf("Command List: look, quit, inventory, get, north (w), south (s), west (a), east (d) \n");
 			printf("Key:\n");
 			printf("  @ - Player\n");
-			printf("  A - Altar\n");
+			printf("  0 - Relic Stone\n");
 			printf("  k - Key \n");
 			printf("  s - Sword \n");
 			printf("  . - Floor\n");
@@ -410,7 +427,17 @@ namespace TextGame
 			for (unsigned int i = 0; i < currRoom.Inventory.size(); ++i) {
 				const InventoryItem& currItem = currRoom.Inventory[i];
 				if (currItem.ItemPosition == playerState.CurrentPosition) {
-					printf("\n I got a '%s'!\n", GetItemName(currItem.Type).c_str());
+
+					if (currItem.Type == ItemType_RELICSTONE) {
+						printf("\n\nYou got a '%s'and won the game!\n", GetItemName(currItem.Type).c_str());
+						printf("Thanks for playing! \n\n");
+						playerState.WantsToExit = true;
+					}
+					else
+					{
+						printf("\n You got a '%s'!\n", GetItemName(currItem.Type).c_str());
+					}
+
 					playerState.Inventory.push_back(currItem);
 					currRoom.Inventory.erase(currRoom.Inventory.begin() + i);
 
@@ -492,6 +519,9 @@ namespace TextGame
 		case ItemType_SWORD:
 			return "Rusty Sword";
 			break;
+		case ItemType_RELICSTONE:
+			return "Relic Stone";
+			break;
 
 		}
 		return "Unknown Item";
@@ -506,7 +536,9 @@ namespace TextGame
 		case TextGame::ItemType_SWORD:
 			return 's';
 			break;
-
+		case ItemType_RELICSTONE:
+			return '0';
+			break;
 		}
 		return 'i';
 	}

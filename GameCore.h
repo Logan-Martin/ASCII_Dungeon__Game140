@@ -22,7 +22,8 @@ namespace TextGame
 	enum ItemType
 	{
 		ItemType_KEY,
-		ItemType_SWORD
+		ItemType_SWORD,
+		ItemType_RELICSTONE
 	};
 
 	struct InventoryItem {
